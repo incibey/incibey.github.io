@@ -1,0 +1,89 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<title>Slayt Gösterisi</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+.slayt-gosterisi {
+  position: relative;
+  width: 500px;
+  height: 300px;
+}
+
+.slayt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.slayt.aktif {
+  opacity: 1;
+}
+
+.kontrol {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.onceki {
+  left: 10px;
+}
+
+.sonraki {
+  right: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="slayt-gosterisi">
+  <div class="slayt aktif">
+    <img src="resim1.jpg" alt="Resim 1">
+  </div>
+  <div class="slayt">
+    <img src="resim2.jpg" alt="Resim 2">
+  </div>
+  <div class="slayt">
+    <img src="resim3.jpg" alt="Resim 3">
+  </div>
+
+  <div class="kontrol onceki"><</div>
+  <div class="kontrol sonraki">></div>
+</div>
+
+<script>
+$(document).ready(function() {
+  let slaytlar = $('.slayt');
+  let aktifSlayt = 0;
+
+  function slaytGoster(n) {
+    slaytlar.eq(aktifSlayt).removeClass('aktif');
+    slaytlar.eq(n).addClass('aktif');
+    aktifSlayt = n;
+  }
+
+  $('.sonraki').click(function() {
+    aktifSlayt = (aktifSlayt + 1) % slaytlar.length;
+    slaytGoster(aktifSlayt);
+  });
+
+  $('.onceki').click(function() {
+    aktifSlayt = (aktifSlayt - 1 + slaytlar.length) % slaytlar.length;
+    slaytGoster(aktifSlayt);
+  });
+
+  setInterval(() => {
+    aktifSlayt = (aktifSlayt + 1) % slaytlar.length;
+    slaytGoster(aktifSlayt);
+  }, 3000);
+});
+</script>
+
+</body>
+</html>
+
