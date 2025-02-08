@@ -1,0 +1,124 @@
+ 
+<!DOCTYPE html>
+<html>
+<head>
+<title>incibey dokunmatik ekran</title>
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles =;
+const numParticles = 100;
+
+for (let i = 0; i < numParticles; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    radius: Math.random() * 2,
+    vx: Math.random() * 2 - 1,  // x velocity
+    vy: Math.random() * 2 - 1,  // y velocity
+    alpha: 0.5 // initial alpha (transparency)
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`; // White with alpha
+    ctx.fill();
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    // Bounce off edges
+    if (p.x + p.radius > canvas.width || p.x - p.radius < 0) {
+      p.vx *= -1;
+    }
+    if (p.y + p.radius > canvas.height || p.y - p.radius < 0) {
+      p.vy *= -1;
+    }
+
+      // Decrease alpha over time (for fading effect)
+      p.alpha -= 0.005;
+      if (p.alpha < 0) {
+        // Reset particle when it fades out
+        p.x = Math.random() * canvas.width;
+        p.y = Math.random() * canvas.height;
+        p.radius = Math.random() * 2;
+        p.vx = Math.random() * 2 - 1;
+        p.vy = Math.random() * 2 - 1;
+        p.alpha = 0.5;
+      }
+
+  }
+
+  requestAnimationFrame(draw);
+}
+
+
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault(); // Prevent default touch behavior (like scrolling)
+  const touch = e.touches;
+  createRipple(touch.clientX, touch.clientY);
+});
+
+canvas.addEventListener('mousedown', (e) => { // For mouse clicks too
+  createRipple(e.clientX, e.clientY);
+});
+
+function createRipple(x, y) {
+    const rippleSize = 50; // Adjust ripple size
+    const numRippleParticles = 30; // Number of particles in each ripple
+
+    for (let i = 0; i < numRippleParticles; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 3 + 1; // Adjust ripple speed
+        const size = Math.random() * 2 + 1;
+
+        particles.push({
+            x: x,
+            y: y,
+            radius: size,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            alpha: 1, // Start with full opacity
+            isRipple: true // Mark as ripple particle for special treatment
+        });
+    }
+}
+
+
+draw();
+
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+</script>
+
+</body>
+</html>
