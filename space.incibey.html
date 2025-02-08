@@ -1,0 +1,107 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>incibey animasyon</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000; /* Arka plan rengi */
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="spaceGlobe"></canvas>
+
+    <script>
+        const canvas = document.getElementById('spaceGlobe');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(centerX, centerY) * 0.8; // Globe'un yarıçapı
+
+        const stars = [];
+        const numStars = 500;
+
+        // Yıldızları oluştur
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                z: Math.random() * 1000 // Z ekseninde rastgele konum
+            });
+        }
+
+        function drawGlobe() {
+            // Dünya çizimi (örnek olarak mavi bir daire)
+            ctx.fillStyle = 'lightblue';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Karalar (örnek olarak rastgele siyah noktalar)
+            ctx.fillStyle = 'black';
+            for (let i = 0; i < 200; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const r = radius * (0.6 + Math.random() * 0.4); // Yarıçapın bir kısmı kadar
+                const x = centerX + r * Math.cos(angle);
+                const y = centerY + r * Math.sin(angle);
+                ctx.beginPath();
+                ctx.arc(x, y, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawStars() {
+            for (let i = 0; i < numStars; i++) {
+                const star = stars[i];
+                const size = (500 / (star.z + 500)) * 2; // Z'ye göre boyut küçültme
+                const x = centerX + (star.x - centerX) * (radius / centerX); // Perspektif
+                const y = centerY + (star.y - centerY) * (radius / centerY);
+
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+
+                star.z -= 5; // Yıldızları hareket ettir (isteğe bağlı)
+                if (star.z < 0) {
+                    star.z = 1000; // Yıldız sonsuza dönsün
+                    star.x = Math.random() * canvas.width;
+                    star.y = Math.random() * canvas.height;
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGlobe();
+            drawStars();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
+            radius = Math.min(centerX, centerY) * 0.8;
+        });
+
+    </script>
+
+</body>
+</html>
