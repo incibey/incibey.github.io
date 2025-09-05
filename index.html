@@ -3,6 +3,15 @@
 <html lang="tr">
 
 <head>
+ <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "9eebde00-9a54-4437-b944-787b093be04d",
+    });
+  });
+</script>
  <meta name="google-site-verification" content="DYYqmd6SeWsL4fU-vTORaaShW0II2bA2XVNpyJBQn7k" />
     <title>incibey Türk bayrakları </title>
     <meta charset="UTF-8">
