@@ -90,7 +90,28 @@
             color: #4C3173 !important;
         }
     </style> 
- <script src="https://cdn.gravitec.net/storage/d6eb7a943621d59a3e0b4d431ea12266/client.js" async></script>
+ <script>
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(function(registration) {
+        return registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: '<BNUy6DXN6O4UUTXr1lPb-KhLhgHb7plTk_r1y0mjpCfBweF9MUG4vwvnR25FKENAd9FvC87icQ-gQQHIN3GaETY>'
+        });
+      })
+      .then(function(subscription) {
+        // Abonelik bilgilerini sunucuya gönder
+        fetch('/subscribe', {
+          method: 'POST',
+          body: JSON.stringify(subscription),
+          headers: { 'Content-Type': 'application/json' }
+        });
+      })
+      .catch(function(error) {
+        console.error('Push aboneliği başarısız:', error);
+      });
+  }
+ </script>
 </head>
 <script>var continuallySettings = { appID: "835r9qqx3rj9" };</script><script src="https://cdn-app.continual.ly/js/embed/continually-embed.latest.min.js"></script>
 <body>
