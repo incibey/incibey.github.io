@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>🧵 Canlı Mesaj Kutusu</title>
+  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: monospace;
+      padding: 20px;
+    }
+    #chat-box {
+      max-width: 700px;
+      margin: auto;
+      border: 1px solid #333;
+      padding: 10px;
+      border-radius: 8px;
+      background: #1a1a1a;
+    }
+    .msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      word-wrap: break-word;
+      background: #222;
+      color: #00FFAA;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+      animation: fadeIn 0.4s ease;
+    }
+    .timestamp {
+      font-size: 0.8em;
+      color: #aaa;
+      margin-top: 4px;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h2>🧵 Canlı Mesaj Kutusu</h2>
+  <div id="chat-box"></div>
+
+  <script>
+    const pubnub = new PubNub({
+      subscribeKey: 'sub-c-24884386-3cf2-11e5-8d55-0619f8945a4f',
+      uuid: 'QjSWKNhNpT'
+    });
+
+    pubnub.subscribe({ channels: ['FfLe6F6H5l'] });
+
+    pubnub.addListener({
+      message: function(event) {
+        const raw = event.message;
+        const timestamp = new Date().toLocaleTimeString();
+
+        let mesaj = '';
+        if (typeof raw === 'string') {
+          mesaj = raw;
+        } else if (typeof raw === 'object') {
+          const strings = Object.entries(raw)
+            .filter(([_, v]) => typeof v === 'string')
+            .map(([_, v]) => v);
+          mesaj = strings.join(' ');
+        }
+
+        const div = document.createElement('div');
+        div.className = 'msg';
+        div.innerHTML = `<div>🧵 Yeni mesaj: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
+        document.getElementById('chat-box').prepend(div);
+      }
+    });
+  </script>
+</body>
+</html>
