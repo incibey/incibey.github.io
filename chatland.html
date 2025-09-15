@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>🧵 Chatland Canlı Mesaj Kutusu</title>
+  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: monospace;
+      padding: 20px;
+    }
+    #chat-box {
+      max-width: 700px;
+      margin: auto;
+      border: 1px solid #333;
+      padding: 10px;
+      border-radius: 8px;
+      background: #1a1a1a;
+    }
+    .msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      background: #222;
+      color: #00FFAA;
+      animation: fadeIn 0.4s ease;
+    }
+    .timestamp {
+      font-size: 0.8em;
+      color: #aaa;
+      margin-top: 4px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 5px;
+      font-family: monospace;
+      border-radius: 5px;
+      border: none;
+    }
+    input {
+      width: 60%;
+    }
+    button {
+      background: #00FFAA;
+      color: #111;
+      cursor: pointer;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h2>🧵 Chatland Canlı Mesaj Kutusu</h2>
+  <input type="text" id="mesajInput" placeholder="Mesajını yaz..." />
+  <button onclick="mesajGonder()">Gönder</button>
+  <div id="chat-box"></div>
+
+  <script>
+    const uuid = 'user-' + Math.random().toString(36).substring(2, 8);
+
+    const pubnub = new PubNub({
+      subscribeKey: 'alt-c-4ebe6a90-f4d3-4822-b1df-0231b12ae6b3',
+      uuid: uuid
+    });
+
+    pubnub.subscribe({ channels: ['canli-mesajlar'] });
+
+    pubnub.addListener({
+      message: function(event) {
+        const raw = event.message;
+        const timestamp = new Date().toLocaleTimeString();
+        let mesaj = typeof raw === 'string' ? raw : Object.values(raw).filter(v => typeof v === 'string').join(' ');
+        const div = document.createElement('div');
+        div.className = 'msg';
+        div.innerHTML = `<div>🧵 ${event.message.uuid || 'Anonim'}: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
+        document.getElementById('chat-box').prepend(div);
+      }
+    });
+
+    function mesajGonder() {
+      const mesaj = document.getElementById('mesajInput').value;
+      pubnub.publish({
+        channel: 'canli-mesajlar',
+        message: { text: mesaj, uuid: uuid }
+      });
+      document.getElementById('mesajInput').value = '';
+    }
+  </script>
+</body>
+</html>
