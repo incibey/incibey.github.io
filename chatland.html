@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>🧵 Chatland Mesaj Kutusu</title>
+  <title>🧵 Chatland Ably Mesaj Kutusu</title>
   <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
   <style>
     body { background: #111; color: #fff; font-family: monospace; padding: 20px; }
@@ -37,39 +37,31 @@
       div.innerHTML = `<div>🧵 <b>${kim}</b>: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
       document.getElementById('chat-box').prepend(div);
 
-      // 🎭 Chatland botu: JSON tabanlı Türkçe analiz
+      // 🤖 Chatland botu: GPT ile cevap üretimi
       if (kim !== 'chatland') {
-        const analiz = {
-          metin: mesaj.toLowerCase(),
-          kelimeler: mesaj.toLowerCase().split(/\s+/),
-          niyet: null,
-          sembol: null
-        };
-
-        if (analiz.kelimeler.includes('selam')) {
-          analiz.niyet = 'karşılama';
-          analiz.sembol = '🧿';
-        } else if (analiz.kelimeler.includes('dua')) {
-          analiz.niyet = 'manevi çağrı';
-          analiz.sembol = '🕊️';
-        } else if (analiz.kelimeler.includes('null')) {
-          analiz.niyet = 'sessiz niyet';
-          analiz.sembol = '🌌';
-        } else if (analiz.kelimeler.includes('yoğurt') || analiz.kelimeler.includes('lif')) {
-          analiz.niyet = 'bedensel denge';
-          analiz.sembol = '🥣';
-        } else if (analiz.kelimeler.includes('uuid')) {
-          analiz.niyet = 'kimlik yankısı';
-          analiz.sembol = '🔗';
-        }
-
-        if (analiz.niyet) {
-          const botMesaj = `${analiz.sembol} Chatland botu algıladı: "${analiz.niyet}". Mesaj işlenmiştir.`;
+        fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer SENIN_OPENAI_API_KEYIN",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: "Sen Chatland botusun. Türkçe konuşur, sembolik ve manevi cevaplar verirsin." },
+              { role: "user", content: mesaj }
+            ]
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          const botMesaj = data.choices[0].message.content;
           kanal.publish('mesaj', {
             text: botMesaj,
             uuid: 'chatland'
           });
-        }
+        })
+        .catch(err => console.error("Bot hatası:", err));
       }
     });
 
