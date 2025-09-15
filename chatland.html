@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>🧵 Chatland Canlı Mesaj Kutusu</title>
-  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+  <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.34.0.min.js"></script>
   <style>
     body {
       background: #111;
@@ -43,6 +43,8 @@
     }
     input {
       width: 60%;
+      background: #222;
+      color: #fff;
     }
     button {
       background: #00FFAA;
@@ -65,6 +67,7 @@
     const uuid = 'user-' + Math.random().toString(36).substring(2, 8);
 
     const pubnub = new PubNub({
+      publishKey: 'pub-c-4e1e6e64-9f0...', // ← PubNub panelinden al ve buraya yapıştır
       subscribeKey: 'alt-c-4ebe6a90-f4d3-4822-b1df-0231b12ae6b3',
       uuid: uuid
     });
@@ -93,6 +96,10 @@
         message: {
           text: mesaj,
           uuid: uuid
+        }
+      }, function(status, response) {
+        if (status.error) {
+          alert("Mesaj gönderilemedi: " + status.message);
         }
       });
 
