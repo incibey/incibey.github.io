@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ritüel Sahne</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+      font-family: sans-serif;
+    }
+    canvas {
+      display: block;
+    }
+    .toast {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #d4f4dd;
+      color: #333;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 18px;
+      display: none;
+      animation: fadein 0.5s ease;
+      box-shadow: 0 0 10px #aaa;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .bot {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      font-size: 32px;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="toast" id="toast">🌀 Sessiz koruma aktif. Niyet yönlendirildi.</div>
+<div class="bot">🤖🌾</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+const count = 80;
+
+for (let i = 0; i < count; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    z: Math.random() * 100,
+    dx: (Math.random() - 0.5) * 2,
+    dy: (Math.random() - 0.5) * 2,
+    dz: (Math.random() - 0.5) * 0.5,
+    color: `hsl(${Math.random() * 360}, 80%, 60%)`
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let p of particles) {
+    let scale = 1 + p.z / 50;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + p.dx * 10 * scale, p.y + p.dy * 10 * scale);
+    ctx.strokeStyle = p.color;
+    ctx.lineWidth = 1.5 + p.z / 30;
+    ctx.stroke();
+
+    p.x += p.dx;
+    p.y += p.dy;
+    p.z += p.dz;
+
+    if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    if (p.z < 0 || p.z > 100) p.dz *= -1;
+  }
+  requestAnimationFrame(draw);
+}
+
+canvas.addEventListener("click", (e) => {
+  for (let p of particles) {
+    const angle = Math.atan2(e.clientY - p.y, e.clientX - p.x);
+    p.dx = Math.cos(angle) * 2;
+    p.dy = Math.sin(angle) * 2;
+    p.dz = Math.random() * 0.5;
+  }
+  const toast = document.getElementById("toast");
+  toast.style.display = "block";
+  setTimeout(() => { toast.style.display = "none"; }, 3000);
+});
+
+draw();
+</script>
+</body>
+</html>
