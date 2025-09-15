@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>🧵 Chatland Ably Mesaj Kutusu</title>
+  <title>🧵 Chatland Mesaj Kutusu</title>
   <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
   <style>
     body { background: #111; color: #fff; font-family: monospace; padding: 20px; }
@@ -12,6 +12,7 @@
     input, button { padding: 10px; margin: 10px 5px; font-family: monospace; border-radius: 5px; border: none; }
     input { width: 60%; background: #222; color: #fff; }
     button { background: #00FFAA; color: #111; cursor: pointer; }
+    .bot-msg { background: #330033; color: #FF00AA; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
@@ -32,9 +33,44 @@
       const timestamp = new Date().toLocaleTimeString();
 
       const div = document.createElement('div');
-      div.className = 'msg';
+      div.className = (kim === 'chatland') ? 'msg bot-msg' : 'msg';
       div.innerHTML = `<div>🧵 <b>${kim}</b>: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
       document.getElementById('chat-box').prepend(div);
+
+      // 🎭 Chatland botu: JSON tabanlı Türkçe analiz
+      if (kim !== 'chatland') {
+        const analiz = {
+          metin: mesaj.toLowerCase(),
+          kelimeler: mesaj.toLowerCase().split(/\s+/),
+          niyet: null,
+          sembol: null
+        };
+
+        if (analiz.kelimeler.includes('selam')) {
+          analiz.niyet = 'karşılama';
+          analiz.sembol = '🧿';
+        } else if (analiz.kelimeler.includes('dua')) {
+          analiz.niyet = 'manevi çağrı';
+          analiz.sembol = '🕊️';
+        } else if (analiz.kelimeler.includes('null')) {
+          analiz.niyet = 'sessiz niyet';
+          analiz.sembol = '🌌';
+        } else if (analiz.kelimeler.includes('yoğurt') || analiz.kelimeler.includes('lif')) {
+          analiz.niyet = 'bedensel denge';
+          analiz.sembol = '🥣';
+        } else if (analiz.kelimeler.includes('uuid')) {
+          analiz.niyet = 'kimlik yankısı';
+          analiz.sembol = '🔗';
+        }
+
+        if (analiz.niyet) {
+          const botMesaj = `${analiz.sembol} Chatland botu algıladı: "${analiz.niyet}". Mesaj işlenmiştir.`;
+          kanal.publish('mesaj', {
+            text: botMesaj,
+            uuid: 'chatland'
+          });
+        }
+      }
     });
 
     function mesajGonder() {
