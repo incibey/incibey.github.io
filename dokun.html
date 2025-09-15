@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kepek Niyeti</title>
+  <style>
+    body {
+      background: #fdf6e3;
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    .kepek {
+      display: inline-block;
+      padding: 20px 40px;
+      background: #e0cda9;
+      border-radius: 30px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #aaa;
+      transition: transform 0.2s ease;
+    }
+    .kepek:active {
+      transform: scale(0.95);
+    }
+    .toast {
+      margin-top: 30px;
+      padding: 15px;
+      background: #d4f4dd;
+      border-radius: 10px;
+      display: none;
+      font-size: 18px;
+      color: #333;
+      animation: fadein 0.5s ease;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="kepek" onclick="showToast()">🌾 Dokun ve niyet ortaya çıksın</div>
+  <div class="toast" id="toast">🌀 Sessiz koruma aktif. Lif sahnesi hazır.</div>
+
+  <script>
+    function showToast() {
+      document.getElementById("toast").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
