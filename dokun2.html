@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Çizgi Ritüeli</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let lines = [];
+const lineCount = 60;
+
+for (let i = 0; i < lineCount; i++) {
+  lines.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    z: Math.random() * 100,
+    dx: (Math.random() - 0.5) * 2,
+    dy: (Math.random() - 0.5) * 2,
+    dz: (Math.random() - 0.5) * 0.5,
+    color: `hsl(${Math.random() * 360}, 80%, 60%)`
+  });
+}
+
+function drawLines() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let line of lines) {
+    let scale = 1 + line.z / 50;
+    ctx.beginPath();
+    ctx.moveTo(line.x, line.y);
+    ctx.lineTo(line.x + line.dx * 10 * scale, line.y + line.dy * 10 * scale);
+    ctx.strokeStyle = line.color;
+    ctx.lineWidth = 1.5 + line.z / 30;
+    ctx.stroke();
+
+    line.x += line.dx;
+    line.y += line.dy;
+    line.z += line.dz;
+
+    if (line.x < 0 || line.x > canvas.width) line.dx *= -1;
+    if (line.y < 0 || line.y > canvas.height) line.dy *= -1;
+    if (line.z < 0 || line.z > 100) line.dz *= -1;
+  }
+  requestAnimationFrame(drawLines);
+}
+
+canvas.addEventListener("click", (e) => {
+  for (let line of lines) {
+    const angle = Math.atan2(e.clientY - line.y, e.clientX - line.x);
+    line.dx = Math.cos(angle) * 2;
+    line.dy = Math.sin(angle) * 2;
+    line.dz = Math.random() * 0.5;
+  }
+});
+
+drawLines();
+</script>
+</body>
+</html>
