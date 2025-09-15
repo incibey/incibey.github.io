@@ -18,6 +18,7 @@
       padding: 10px;
       border-radius: 8px;
       background: #1a1a1a;
+      min-height: 300px;
     }
     .msg {
       margin: 10px 0;
@@ -71,22 +72,29 @@
 
     pubnub.addListener({
       message: function(event) {
-        const raw = event.message;
+        const mesaj = event.message.text || '[Mesaj boş]';
+        const kim = event.message.uuid || 'Anonim';
         const timestamp = new Date().toLocaleTimeString();
-        let mesaj = typeof raw === 'string' ? raw : Object.values(raw).filter(v => typeof v === 'string').join(' ');
+
         const div = document.createElement('div');
         div.className = 'msg';
-        div.innerHTML = `<div>🧵 ${event.message.uuid || 'Anonim'}: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
+        div.innerHTML = `<div>🧵 <b>${kim}</b>: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
         document.getElementById('chat-box').prepend(div);
       }
     });
 
     function mesajGonder() {
-      const mesaj = document.getElementById('mesajInput').value;
+      const mesaj = document.getElementById('mesajInput').value.trim();
+      if (!mesaj) return;
+
       pubnub.publish({
         channel: 'canli-mesajlar',
-        message: { text: mesaj, uuid: uuid }
+        message: {
+          text: mesaj,
+          uuid: uuid
+        }
       });
+
       document.getElementById('mesajInput').value = '';
     }
   </script>
