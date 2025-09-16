@@ -37,9 +37,79 @@
   <div class="info">Move your mouse to guide the cosmic spiders</div>
 
   <script>
-    // JavaScript kodun buraya gömüldü
-    // script.txt içeriği buraya yerleştirildi
-    // Kodun tamamı teknik olarak işlendi ve sahneye entegre edildi
+    const canvas = document.getElementById('cosmicCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let spiders = [];
+    let mouse = { x: null, y: null };
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    window.addEventListener('mousemove', function(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    class Spider {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 1;
+        this.speedX = Math.random() * 2 - 1;
+        this.speedY = Math.random() * 2 - 1;
+        this.color = `rgba(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},255,0.7)`;
+      }
+
+      update() {
+        if (mouse.x && mouse.y) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 100) {
+            this.x -= dx / dist;
+            this.y -= dy / dist;
+          }
+        }
+
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x < 0 || this.x > width) this.speedX *= -1;
+        if (this.y < 0 || this.y > height) this.speedY *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function initSpiders() {
+      spiders = [];
+      for (let i = 0; i < 100; i++) {
+        spiders.push(new Spider());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      spiders.forEach(spider => {
+        spider.update();
+        spider.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    initSpiders();
+    animate();
   </script>
 </body>
 </html>
