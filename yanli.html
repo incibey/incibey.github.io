@@ -64,8 +64,15 @@
           kullanici = raw.username || raw.user || raw.sender || 'Anonim';
           mesaj = raw.text || raw.message || raw.content || '';
         } else if (typeof raw === 'string') {
-          kullanici = 'Anonim';
-          mesaj = raw;
+          // Eğer düz metin geldiyse, kullanıcı adı ve mesajı ayır
+          if (raw.includes(':')) {
+            const parts = raw.split(':');
+            kullanici = parts[0].trim();
+            mesaj = parts.slice(1).join(':').trim();
+          } else {
+            kullanici = 'Anonim';
+            mesaj = raw;
+          }
         }
 
         if (!mesaj) return;
