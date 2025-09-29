@@ -29,6 +29,11 @@
       box-shadow: 0 0 5px rgba(0,0,0,0.3);
       animation: fadeIn 0.4s ease;
     }
+    .timestamp {
+      font-size: 0.8em;
+      color: #aaa;
+      margin-top: 4px;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -50,21 +55,24 @@
     pubnub.addListener({
       message: function(event) {
         const raw = event.message;
+        const timestamp = new Date().toLocaleTimeString();
 
-        let mesaj = '';
         let kullanici = '';
+        let mesaj = '';
 
         if (typeof raw === 'object') {
-          // Sadece kullanıcı adı ve mesaj metni çek
-          if (raw.username) kullanici = raw.username;
-          if (raw.text) mesaj = raw.text;
+          kullanici = raw.username || raw.user || raw.sender || 'Anonim';
+          mesaj = raw.text || raw.message || raw.content || '';
         } else if (typeof raw === 'string') {
+          kullanici = 'Anonim';
           mesaj = raw;
         }
 
+        if (!mesaj) return;
+
         const div = document.createElement('div');
         div.className = 'msg';
-        div.innerHTML = `<div><strong>${kullanici}</strong>: ${mesaj}</div>`;
+        div.innerHTML = `<div><strong>${kullanici}</strong>: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
         document.getElementById('chat-box').prepend(div);
       }
     });
