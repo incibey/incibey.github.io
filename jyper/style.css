@@ -1,0 +1,51 @@
+/* Basic setup for the scene */
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+    color: #e0f7fa;
+    font-family: 'Orbitron', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* This makes the three.js canvas fill the screen */
+canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* Styling for the starfield background container */
+#starfield {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    z-index: 0;
+}
+
+/* Styling for individual stars */
+.star {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 50%;
+    animation: twinkle 5s infinite ease-in-out;
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #00ffff;
+}
+
+/* Animation to make the stars twinkle */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.5; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* NOTE: TailwindCSS is loaded via a script in the HTML. 
+   The button styling is handled by Tailwind classes directly in the HTML.
+   You can add custom styles for the button here if you prefer. */
