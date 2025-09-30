@@ -52,34 +52,38 @@
 
     pubnub.subscribe({ channels: ['FfLe6F6H5l'] });
 
+    // 🧿 Perdeleme fonksiyonu
+    function perdeleMesaj(metin) {
+      const isimler = ["Gözcü", "Yeniler", "Terminal", "Sahneci", "Akışçı", "Ritüelci", "Niyetli", "ASCII", "Sessiz", "Kodcu"];
+      // ID gibi görünen 10 karakterli dizileri değiştir
+      metin = metin.replace(/\b[A-Za-z0-9]{10}\b/g, () => {
+        return isimler[Math.floor(Math.random() * isimler.length)];
+      });
+      // "public" kelimesini "Antiland" ile değiştir
+      metin = metin.replace(/\bpublic\b/gi, "Antiland");
+      return metin;
+    }
+
     pubnub.addListener({
       message: function(event) {
-        const raw = event.message;
-        const timestamp = new Date().toLocaleTimeString();
+        const raw = event const timestamp = new Date().toLocaleTimeString();
 
-        let kullanici = '';
         let mesaj = '';
-
-        if (typeof raw === 'object') {
-          kullanici = raw.username || raw.user || raw.sender || 'Anonim';
-          mesaj = raw.text || raw.message || raw.content || '';
-        } else if (typeof raw === 'string') {
-          // Eğer düz metin geldiyse, kullanıcı adı ve mesajı ayır
-          if (raw.includes(':')) {
-            const parts = raw.split(':');
-            kullanici = parts[0].trim();
-            mesaj = parts.slice(1).join(':').trim();
-          } else {
-            kullanici = 'Anonim';
-            mesaj = raw;
-          }
+        if (typeof raw === 'string') {
+          mesaj = raw;
+        } else if (typeof raw === 'object') {
+          const strings = Object.entries(raw)
+            .filter(([_, v]) => typeof v === 'string')
+            .map(([_, v]) => v);
+          mesaj = strings.join(' ');
         }
 
-        if (!mesaj) return;
+        // 🔮 Mesajı perdele
+        mesaj = perdeleMesaj(mesaj);
 
         const div = document.createElement('div');
         div.className = 'msg';
-        div.innerHTML = `<div><strong>${kullanici}</strong>: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
+        div.innerHTML = `<div>🧵 Yeni mesaj: ${mesaj}</div><div class="timestamp">${timestamp}</div>`;
         document.getElementById('chat-box').prepend(div);
       }
     });
