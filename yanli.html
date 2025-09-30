@@ -52,21 +52,18 @@
 
     pubnub.subscribe({ channels: ['FfLe6F6H5l'] });
 
-    // 🧿 Perdeleme fonksiyonu
+    // 🔮 Sadece mesaj içeriğini perdeleyen fonksiyon
     function perdeleMesaj(metin) {
       const isimler = ["Gözcü", "Yeniler", "Terminal", "Sahneci", "Akışçı", "Ritüelci", "Niyetli", "ASCII", "Sessiz", "Kodcu"];
-      // ID gibi görünen 10 karakterli dizileri değiştir
-      metin = metin.replace(/\b[A-Za-z0-9]{10}\b/g, () => {
-        return isimler[Math.floor(Math.random() * isimler.length)];
-      });
-      // "public" kelimesini "Antiland" ile değiştir
-      metin = metin.replace(/\bpublic\b/gi, "Antiland");
-      return metin;
+      return metin
+        .replace(/\b[A-Za-z0-9]{10}\b/g, () => isimler[Math.floor(Math.random() * isimler.length)])
+        .replace(/\bpublic\b/gi, "Antiland");
     }
 
     pubnub.addListener({
       message: function(event) {
-        const raw = event const timestamp = new Date().toLocaleTimeString();
+        const raw = event.message;
+        const timestamp = new Date().toLocaleTimeString();
 
         let mesaj = '';
         if (typeof raw === 'string') {
@@ -78,7 +75,7 @@
           mesaj = strings.join(' ');
         }
 
-        // 🔮 Mesajı perdele
+        // 🔁 Sadece mesaj içeriğini filtrele
         mesaj = perdeleMesaj(mesaj);
 
         const div = document.createElement('div');
